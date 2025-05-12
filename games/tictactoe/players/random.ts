@@ -1,10 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
+import { stringify } from "node:querystring";
 const app = express();
 const port = process.argv[2];
 const gameKey = Number(process.argv[3]);
 const gameType = "tictactoe";
 let passcode = "1";
+const serverPort = 3000;
+const serverAddress = "192.168.1.36"
+const clientAddress = "192.168.1.14"
 
 app.use(bodyParser.json());
 
@@ -18,7 +22,7 @@ app.post("/GameState", (req, res) => {
 
   res.send("nice");
   const move = pickMove(req.body.gameState);
-  fetch("http://localhost:3000" + "/Move", {
+  fetch("http://" + serverAddress + ":" + serverPort + "/Move", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,7 +57,7 @@ app.listen(port, () => {
 });
 
 function start() {
-  fetch("http://localhost:3000" + "/Start", {
+  fetch("http://" + serverAddress + ":" + serverPort + "/Start", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +66,7 @@ function start() {
       gameKey,
       gameType,
       apiKey: 1,
-      returnURL: "http://localhost:" + port,
+      returnURL: `http://${clientAddress}:` + port,
     }),
   })
     .then((res) => res.json())
